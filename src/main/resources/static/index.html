@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 图书馆管理系统</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 50px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            height: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .api-section {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+        }
+        
+        .api-endpoint {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .method-get { color: #61affe; }
+        .method-post { color: #49cc90; }
+        .method-put { color: #fca130; }
+        .method-delete { color: #f93e3e; }
+        
+        .btn-primary-custom {
+            background: var(--secondary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .card-hover {
+            transition: all 0.3s;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 调试信息样式 */
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none; /* 默认隐藏，调试时显示 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 调试信息（默认隐藏） -->
+    <div class="debug-info" id="debugInfo">
+        API基础URL: <span id="debugApiUrl"></span>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-book me-2"></i>图书馆管理系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">功能</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                            <i class="fas fa-code me-1"></i>API文档
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="toggleDebugInfo()">
+                            <i class="fas fa-bug me-1"></i>调试
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero-section">
+        <div class="container text-center">
+            <h1 class="hero-title">智能图书馆管理系统</h1>
+            <p class="hero-subtitle">基于Spring Boot + MySQL的现代化图书管理解决方案</p>
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                    <p class="lead">提供完整的图书管理、借阅归还、用户管理、统计报表等功能，助力图书馆数字化转型</p>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="#features" class="btn btn-primary-custom btn-lg me-3">
+                    <i class="fas fa-rocket me-2"></i>开始探索
+                </a>
+                <a href="/swagger-ui/index.html" target="_blank" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-code me-2"></i>API文档
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 系统统计 -->
+    <div class="container">
+        <div class="row mb-5" id="stats">
+            <!-- 统计信息通过JavaScript动态加载 -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">注册用户</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBooks">0</div>
+                    <div class="stat-label">馆藏图书</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="availableBooks">0</div>
+                    <div class="stat-label">可借图书</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="currentBorrows">0</div>
+                    <div class="stat-label">当前借阅</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能特性 -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">核心功能特性</h2>
+                <p class="text-muted">全面的图书馆管理功能，满足各种管理需求</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>用户管理</h4>
+                        <p class="text-muted">完整的用户注册、登录、权限管理功能。支持角色分配（管理员、图书管理员、普通用户），用户状态管理。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>用户注册与登录</li>
+                            <li><i class="fas fa-check text-success me-2"></i>角色权限控制</li>
+                            <li><i class="fas fa-check text-success me-2"></i>借阅数量限制</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4>图书管理</h4>
+                        <p class="text-muted">全面的图书信息管理，支持ISBN、分类、出版社等多维度管理。实时库存跟踪，智能图书推荐。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>图书信息CRUD</li>
+                            <li><i class="fas fa-check text-success me-2"></i>库存实时更新</li>
+                            <li><i class="fas fa-check text-success me-2"></i>智能搜索与分类</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h4>借阅管理</h4>
+                        <p class="text-muted">完整的借阅流程管理，支持借阅、归还、续借、预约等功能。自动计算超期罚款，发送借阅提醒。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>借阅与归还流程</li>
+                            <li><i class="fas fa-check text-success me-2"></i>自动罚款计算</li>
+                            <li><i class="fas fa-check text-success me-2"></i>借阅提醒系统</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h4>统计分析</h4>
+                        <p class="text-muted">多维度的数据统计与分析，可视化展示借阅趋势、热门图书、用户活跃度等关键指标。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>借阅统计报表</li>
+                            <li><i class="fas fa-check text-success me-2"></i>用户活跃度分析</li>
+                            <li><i class="fas fa-check text-success me-2"></i>图书热度排名</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h4>智能提醒</h4>
+                        <p class="text-muted">自动化的提醒系统，及时通知用户借阅到期、超期罚款、预约到书等重要信息。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>到期归还提醒</li>
+                            <li><i class="fas fa-check text-success me-2"></i>超期罚款通知</li>
+                            <li><i class="fas fa-check text-success me-2"></i>预约到书提醒</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>安全可靠</h4>
+                        <p class="text-muted">基于Spring Security的安全框架，数据加密传输，权限精细控制，确保系统安全稳定运行。</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>数据加密存储</li>
+                            <li><i class="fas fa-check text-success me-2"></i>权限访问控制</li>
+                            <li><i class="fas fa-check text-success me-2"></i>操作日志审计</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API接口展示 -->
+    <section id="api" class="api-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">RESTful API 接口</h2>
+                <p class="lead">基于OpenAPI 3.0规范的完整API文档，支持前后端分离开发</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h4><i class="fas fa-users me-2"></i>用户管理API</h4>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/users</code> - 获取用户列表
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-post">POST</span> <code>/api/users</code> - 创建新用户
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/users/{id}</code> - 获取用户详情
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-put">PUT</span> <code>/api/users/{id}</code> - 更新用户信息
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <h4><i class="fas fa-book me-2"></i>图书管理API</h4>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/books</code> - 获取图书列表
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-post">POST</span> <code>/api/books</code> - 添加新图书
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/books/search</code> - 搜索图书
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-post">POST</span> <code>/api/books/{id}/borrow</code> - 借阅图书
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <h4><i class="fas fa-exchange-alt me-2"></i>借阅管理API</h4>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/borrow-records</code> - 获取借阅记录
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-post">POST</span> <code>/api/borrow-records</code> - 创建借阅记录
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-post">POST</span> <code>/api/borrow-records/{id}/return</code> - 归还图书
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/borrow-records/overdue</code> - 获取超期记录
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <h4><i class="fas fa-chart-line me-2"></i>统计分析API</h4>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/library/overview</code> - 获取系统概览
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/library/health</code> - 健康检查
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/books/statistics</code> - 图书统计
+                    </div>
+                    <div class="api-endpoint">
+                        <span class="method-get">GET</span> <code>/api/users/statistics/overview</code> - 用户统计
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="/swagger-ui/index.html" target="_blank" class="btn btn-light btn-lg">
+                    <i class="fas fa-external-link-alt me-2"></i>查看完整API文档
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 快速测试 -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">API快速测试</h2>
+                <p class="text-muted">在页面上直接测试API接口</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-hover mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-book me-2"></i>图书列表测试</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>获取图书馆所有图书列表</p>
+                            <button class="btn btn-primary" onclick="testGetBooks()">
+                                <i class="fas fa-play me-1"></i>测试 GET /api/books
+                            </button>
+                            <div id="booksResult" class="mt-3" style="display:none;">
+                                <div class="alert alert-info">
+                                    <div id="booksData"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card card-hover mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>系统健康检查</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>检查系统是否正常运行</p>
+                            <button class="btn btn-success" onclick="testHealthCheck()">
+                                <i class="fas fa-heartbeat me-1"></i>测试 GET /api/library/health
+                            </button>
+                            <div id="healthResult" class="mt-3" style="display:none;">
+                                <div class="alert" id="healthAlert">
+                                    <div id="healthData"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-secondary" onclick="testAllAPIs()">
+                    <i class="fas fa-vial me-1"></i>测试所有API连接
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2 class="display-6 fw-bold mb-4">关于图书馆管理系统</h2>
+                    <p class="lead mb-4">这是一个基于Spring Boot 3.2.5的现代化图书馆管理系统，采用前后端分离架构，提供完整的图书管理解决方案。</p>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-cogs me-2"></i>技术栈</h5>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <span class="badge bg-primary">Spring Boot 3.2.5</span>
+                            <span class="badge bg-primary">Spring Data JPA</span>
+                            <span class="badge bg-primary">MySQL 8.0</span>
+                            <span class="badge bg-primary">Spring Security</span>
+                            <span class="badge bg-primary">OpenAPI 3.0</span>
+                            <span class="badge bg-primary">Bootstrap 5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-graduation-cap me-2"></i>课程项目</h5>
+                        <p>本项目为《软件工程与AI辅助开发》课程作业，展示了如何结合AI工具（如ChatGPT、Copilot）完成软件开发全流程。</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card bg-white border-0 shadow-lg">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4"><i class="fas fa-info-circle me-2"></i>系统信息</h5>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">项目名称</small>
+                                    <strong>图书馆管理系统</strong>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">版本</small>
+                                    <strong>v1.0.0</strong>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">后端技术</small>
+                                    <strong>Java + Spring Boot</strong>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">数据库</small>
+                                    <strong>MySQL 8.0</strong>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">API文档</small>
+                                    <strong>OpenAPI 3.0</strong>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <small class="text-muted d-block">前端框架</small>
+                                    <strong>Bootstrap 5</strong>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <div class="d-grid gap-2">
+                                        <a href="/api" class="btn btn-outline-primary">
+                                            <i class="fas fa-server me-1"></i>API根路径
+                                        </a>
+                                        <a href="/swagger-ui/index.html" target="_blank" class="btn btn-primary">
+                                            <i class="fas fa-code me-1"></i>查看API文档
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-book me-2"></i>图书馆管理系统
+                    </h5>
+                    <p>基于Spring Boot的现代化图书馆管理解决方案，提供完整的图书管理、借阅归还、用户管理等功能。</p>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">快速链接</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#home" class="text-light text-decoration-none">
+                                <i class="fas fa-chevron-right me-1"></i>系统首页
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#features" class="text-light text-decoration-none">
+                                <i class="fas fa-chevron-right me-1"></i>功能特性
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#api" class="text-light text-decoration-none">
+                                <i class="fas fa-chevron-right me-1"></i>API接口
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/swagger-ui/index.html" target="_blank" class="text-light text-decoration-none">
+                                <i class="fas fa-chevron-right me-1"></i>API文档
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">系统状态</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-2" id="systemStatusIcon">
+                            <i class="fas fa-circle text-success"></i>
+                        </div>
+                        <div>
+                            <span id="systemStatusText">系统运行正常</span>
+                            <small class="d-block text-muted" id="lastChecked">最后检查: --</small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-light mt-2" onclick="checkSystemStatus()">
+                        <i class="fas fa-sync-alt me-1"></i>检查状态
+                    </button>
+                </div>
+            </div>
+            
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        &copy; 2025 图书馆管理系统. 课程项目 - 《软件工程与AI辅助开发》
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        开发者: <span id="developerName">学生团队</span> | 
+                        学号: <span id="studentId">2024XXXX</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript代码 -->
+    <script>
+        // ========== 全局配置 ==========
+        // 动态获取API基础URL
+        const API_BASE_URL = window.location.origin + '/api';
+        
+        // 调试模式（默认关闭）
+        let debugMode = false;
+        
+        console.log('页面加载完成');
+        console.log('当前页面URL:', window.location.href);
+        console.log('API基础URL:', API_BASE_URL);
+        
+        // ========== 页面初始化 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示API基础URL
+            document.getElementById('debugApiUrl').textContent = API_BASE_URL;
+            
+            // 设置开发者信息
+            document.getElementById('developerName').textContent = '刘孙文';
+            document.getElementById('studentId').textContent = '2305110084';
+            
+            // 加载初始数据
+            loadSystemStats();
+            checkSystemStatus();
+            
+            // 设置平滑滚动
+            setupSmoothScrolling();
+            
+            // 测试所有API连接
+            setTimeout(testAllAPIs, 1000);
+        });
+        
+        // ========== 工具函数 ==========
+        
+        /**
+         * 设置平滑滚动
+         */
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+        
+        /**
+         * 切换调试信息显示
+         */
+        function toggleDebugInfo() {
+            debugMode = !debugMode;
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = debugMode ? 'block' : 'none';
+            
+            // 显示提示
+            showMessage(debugMode ? '调试模式已开启' : '调试模式已关闭', 
+                       debugMode ? 'info' : 'success');
+        }
+        
+        /**
+         * 显示消息提示
+         */
+        function showMessage(message, type = 'info') {
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            messageDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
+            messageDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(messageDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 3000);
+        }
+        
+        /**
+         * 发送API请求（封装fetch）
+         */
+        async function apiRequest(endpoint, options = {}) {
+            const url = API_BASE_URL + endpoint;
+            
+            if (debugMode) {
+                console.log(`API请求: ${options.method || 'GET'} ${url}`);
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                if (debugMode) {
+                    console.log(`API响应: ${response.status} ${response.statusText}`);
+                }
+                
+                return response;
+            } catch (error) {
+                console.error(`API请求失败: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // ========== 数据加载函数 ==========
+        
+        /**
+         * 加载系统统计数据
+         */
+        async function loadSystemStats() {
+            try {
+                const response = await apiRequest('/library/overview');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    // 更新统计卡片
+                    document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+                    document.getElementById('totalBooks').textContent = data.totalBooks || 0;
+                    document.getElementById('availableBooks').textContent = data.availableBooks || 0;
+                    document.getElementById('currentBorrows').textContent = data.currentBorrows || 0;
+                }
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+                // 使用默认值
+                document.getElementById('totalUsers').textContent = '0';
+                document.getElementById('totalBooks').textContent = '0';
+                document.getElementById('availableBooks').textContent = '0';
+                document.getElementById('currentBorrows').textContent = '0';
+                
+                if (debugMode) {
+                    showMessage('统计数据加载失败: ' + error.message, 'warning');
+                }
+            }
+        }
+        
+        /**
+         * 检查系统状态
+         */
+        async function checkSystemStatus() {
+            const statusIcon = document.getElementById('systemStatusIcon');
+            const statusText = document.getElementById('systemStatusText');
+            const lastChecked = document.getElementById('lastChecked');
+            
+            // 显示加载状态
+            statusIcon.innerHTML = '<span class="loading"></span>';
+            statusText.textContent = '检查中...';
+            
+            try {
+                const response = await apiRequest('/library/health');
+                const result = await response.json();
+                
+                const now = new Date();
+                lastChecked.textContent = `最后检查: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                
+                if (result.success) {
+                    statusIcon.innerHTML = '<i class="fas fa-circle text-success"></i>';
+                    statusText.textContent = '系统运行正常';
+                } else {
+                    statusIcon.innerHTML = '<i class="fas fa-circle text-danger"></i>';
+                    statusText.textContent = '系统异常';
+                }
+            } catch (error) {
+                console.error('检查系统状态失败:', error);
+                statusIcon.innerHTML = '<i class="fas fa-circle text-warning"></i>';
+                statusText.textContent = '连接失败';
+                lastChecked.textContent = '最后检查: 失败';
+                
+                if (debugMode) {
+                    showMessage('系统状态检查失败: ' + error.message, 'danger');
+                }
+            }
+        }
+        
+        // ========== API测试函数 ==========
+        
+        /**
+         * 测试所有API连接
+         */
+        async function testAllAPIs() {
+            if (debugMode) {
+                console.log('开始测试所有API连接...');
+            }
+            
+            const endpoints = [
+                '/library/health',
+                '/users',
+                '/books',
+                '/borrow-records'
+            ];
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await apiRequest(endpoint);
+                    if (response.ok) {
+                        successCount++;
+                        if (debugMode) {
+                            console.log(`✓ ${endpoint} 连接成功`);
+                        }
+                    } else {
+                        failCount++;
+                        if (debugMode) {
+                            console.log(`✗ ${endpoint} 连接失败: ${response.status}`);
+                        }
+                    }
+                } catch (error) {
+                    failCount++;
+                    if (debugMode) {
+                        console.log(`✗ ${endpoint} 请求失败: ${error.message}`);
+                    }
+                }
+            }
+            
+            if (debugMode) {
+                console.log(`API测试完成: ${successCount}成功, ${failCount}失败`);
+                
+                if (failCount === 0) {
+                    showMessage('所有API连接正常', 'success');
+                } else {
+                    showMessage(`${failCount}个API连接失败`, 'warning');
+                }
+            }
+        }
+        
+        /**
+         * 测试获取图书列表
+         */
+        async function testGetBooks() {
+            const resultDiv = document.getElementById('booksResult');
+            const dataDiv = document.getElementById('booksData');
+            const button = event.target;
+            
+            // 保存原始按钮文本
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> 请求中...';
+            button.disabled = true;
+            
+            try {
+                const response = await apiRequest('/books?page=0&size=5');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const books = result.data.content || [];
+                    
+                    if (books.length > 0) {
+                        let html = '<strong>获取到 ' + books.length + ' 本图书:</strong><ul class="mb-0 mt-2">';
+                        books.forEach(book => {
+                            html += `<li>${book.title} - ${book.author} (库存: ${book.availableCopies}/${book.totalCopies})</li>`;
+                        });
+                        html += '</ul>';
+                        dataDiv.innerHTML = html;
+                    } else {
+                        dataDiv.innerHTML = '<strong>成功!</strong> 但图书馆中暂无图书数据。';
+                    }
+                    
+                    resultDiv.style.display = 'block';
+                    showMessage('图书列表获取成功', 'success');
+                } else {
+                    dataDiv.innerHTML = '<strong>错误:</strong> ' + (result.message || '获取图书列表失败');
+                    resultDiv.style.display = 'block';
+                    showMessage('图书列表获取失败: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                dataDiv.innerHTML = '<strong>请求失败:</strong> ' + error.message;
+                resultDiv.style.display = 'block';
+                showMessage('图书列表请求失败: ' + error.message, 'danger');
+            } finally {
+                // 恢复按钮状态
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // 5秒后隐藏结果
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        /**
+         * 测试健康检查
+         */
+        async function testHealthCheck() {
+            const resultDiv = document.getElementById('healthResult');
+            const dataDiv = document.getElementById('healthData');
+            const alertDiv = document.getElementById('healthAlert');
+            const button = event.target;
+            
+            // 保存原始按钮文本
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> 检查中...';
+            button.disabled = true;
+            
+            try {
+                const response = await apiRequest('/library/health');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    dataDiv.innerHTML = `
+                        <strong>系统状态:</strong> ${data.status || 'UNKNOWN'}<br>
+                        <strong>服务:</strong> ${data.service || 'Library Management System'}<br>
+                        <strong>时间戳:</strong> ${new Date(data.timestamp || Date.now()).toLocaleString()}
+                    `;
+                    alertDiv.className = 'alert alert-success';
+                    showMessage('系统健康检查通过', 'success');
+                } else {
+                    dataDiv.innerHTML = '<strong>健康检查失败:</strong> ' + (result.message || '未知错误');
+                    alertDiv.className = 'alert alert-danger';
+                    showMessage('系统健康检查失败: ' + result.message, 'danger');
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                dataDiv.innerHTML = '<strong>请求失败:</strong> ' + error.message;
+                alertDiv.className = 'alert alert-danger';
+                resultDiv.style.display = 'block';
+                showMessage('健康检查请求失败: ' + error.message, 'danger');
+            } finally {
+                // 恢复按钮状态
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // 5秒后隐藏结果
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // ========== 定时任务 ==========
+        
+        // 自动刷新统计数据（每30秒）
+        setInterval(loadSystemStats, 30000);
+        
+        // 自动检查系统状态（每60秒）
+        setInterval(checkSystemStatus, 60000);
+    </script>
+</body>
+</html>

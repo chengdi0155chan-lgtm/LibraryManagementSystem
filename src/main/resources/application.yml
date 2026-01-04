@@ -1,0 +1,263 @@
+# ==================== Spring主配置 ====================
+spring:
+  main:
+    allow-bean-definition-overriding: true  # 允许Bean覆盖
+    
+  application:
+    name: library-management-system
+  
+  # ==================== 服务器配置 ====================
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  # ==================== 数据源配置（MySQL）====================
+  datasource:
+    url: jdbc:mysql://localhost:3306/library_db?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useUnicode=true
+    username: root
+    password: 123456  # 请修改为你的MySQL密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # ==================== JPA/Hibernate 配置 ====================
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update  # 开发环境使用 update，生产环境改为 validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+  
+  # ==================== H2 控制台配置（测试用）====================
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+  
+  # ==================== 缓存配置 ====================
+  cache:
+    type: simple
+    cache-names: books, users, categories
+  
+  # ==================== Spring Security 配置（开发环境）====================
+
+  security:
+     user:
+       name: admin
+       password: admin
+       roles: ADMIN
+
+# ==================== 服务器配置 ====================
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  
+  error:
+    include-exception: false
+    include-stacktrace: never
+    include-message: always
+    include-binding-errors: always
+
+# ==================== 日志配置 ====================
+logging:
+  level:
+    # 应用包
+    com.library: DEBUG
+    com.library.controller: INFO
+    com.library.service: INFO
+    com.library.repository: INFO
+    
+    # Spring框架
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.transaction: INFO
+    
+    # 数据库
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    
+    # 数据源
+    com.zaxxer.hikari: INFO
+    
+    # 根日志
+    root: INFO
+  
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  
+  file:
+    name: logs/library.log
+    max-size: 10MB
+    max-history: 30
+
+# ==================== SpringDoc OpenAPI配置 ====================
+springdoc:
+  # API文档配置
+  api-docs:
+    path: /api-docs
+    enabled: true
+  
+  # Swagger UI配置
+  swagger-ui:
+    path: /swagger-ui.html
+    # 中文配置
+    display-request-duration: true  # 显示请求时长
+    operations-sorter: method       # 按方法排序
+    tags-sorter: alpha              # 按字母顺序排序标签
+    default-models-expand-depth: 2  # 默认展开模型深度
+    default-model-expand-depth: 2   # 默认模型展开深度
+    doc-expansion: none             # 文档展开方式: list, full, none
+    filter: true                    # 启用过滤器
+    show-extensions: true           # 显示扩展信息
+    show-common-extensions: true    # 显示公共扩展信息
+    # 汉化配置
+    config-url: /api-docs/swagger-config
+    url: /api-docs
+    # 隐藏默认的Swagger URL
+    urls-primary-name: Library API
+  
+  # 多语言支持（中文）
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
+  remove-broken-reference-definitions: true
+  
+  # 分组配置
+  group-configs:
+    - group: 'library-api'
+      display-name: '图书馆管理系统API'
+      paths-to-match: '/api/**'
+      packages-to-scan: com.library.controller
+  
+  # 缓存配置
+  cache:
+    disabled: true
+
+
+# ==================== 应用自定义配置 ====================
+library:
+  app:
+    name: "Library Management System"
+    version: "1.0.0"
+  
+  borrow:
+    default-days: 30
+    max-books-per-user: 5
+    fine-per-day: 0.5
+    renew-days: 7
+
+---
+# ==================== 开发环境配置 ====================
+# 使用命令激活：java -jar library-app.jar --spring.profiles.active=dev
+# 或者在IDEA中设置Active profiles: dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  # 开发环境使用H2内存数据库
+  datasource:
+    url: jdbc:h2:mem:library_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    com.library: DEBUG
+    org.hibernate.SQL: DEBUG
+
+---
+# ==================== 测试环境配置 ====================
+# 使用命令激活：java -jar library-app.jar --spring.profiles.active=test
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:library_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+logging:
+  level:
+    com.library: INFO
+    root: INFO
+
+---
+# ==================== 生产环境配置 ====================
+# 使用命令激活：java -jar library-app.jar --spring.profiles.active=prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/library_prod?useSSL=true&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    com.library: WARN
+    org.springframework: WARN
+    root: WARN
+  file:
+    name: /var/log/library/library.log
